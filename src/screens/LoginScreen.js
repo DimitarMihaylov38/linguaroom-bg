@@ -1,17 +1,17 @@
 
+
 import { useState } from 'react';
 import {
-  View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
   Alert,
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
 } from 'react-native';
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+
 
 import { useAuth } from '../contexts/AuthContext';
 
@@ -49,15 +49,17 @@ export default function LoginScreen({ onRegister }) {
     }
   };
 
-  return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-      >
+
+return (
+  <KeyboardAwareScrollView
+    style={styles.container}
+    contentContainerStyle={styles.content}
+    keyboardShouldPersistTaps="handled"
+    keyboardDismissMode="on-drag"
+    bottomOffset={130}
+  >
+
+
         <Text style={styles.title}>LinguaRoom BG</Text>
 
         <Text style={styles.subtitle}>
@@ -66,24 +68,30 @@ export default function LoginScreen({ onRegister }) {
 
         <Text style={styles.heading}>Вход</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Имейл"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-          value={email}
-          onChangeText={setEmail}
-        />
+     
+<TextInput
+  style={styles.input}
+  placeholder="Имейл"
+  keyboardType="email-address"
+  autoCapitalize="none"
+  autoComplete="email"
+  returnKeyType="next"
+  value={email}
+  onChangeText={setEmail}
+/>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Парола"
-          secureTextEntry
-          autoComplete="password"
-          value={password}
-          onChangeText={setPassword}
-        />
+
+     
+<TextInput
+  style={styles.input}
+  placeholder="Парола"
+  secureTextEntry
+  autoComplete="password"
+  returnKeyType="done"
+  value={password}
+  onChangeText={setPassword}
+/>
+
 
         <TouchableOpacity
           style={[
@@ -109,9 +117,10 @@ export default function LoginScreen({ onRegister }) {
             Нямаш профил? Регистрирай се
           </Text>
         </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    
+    </KeyboardAwareScrollView>
   );
+
 }
 
 const styles = StyleSheet.create({
@@ -119,11 +128,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f7fb',
   },
-  content: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
+ 
+
+content: {
+  flexGrow: 1,
+  justifyContent: 'flex-start',
+  paddingHorizontal: 24,
+  paddingTop: 30,
+  paddingBottom: 50,
+},
+
+
   title: {
     fontSize: 32,
     fontWeight: 'bold',
@@ -135,7 +150,7 @@ const styles = StyleSheet.create({
     color: '#64748b',
     textAlign: 'center',
     marginTop: 10,
-    marginBottom: 40,
+    marginBottom: 20,
   },
   heading: {
     fontSize: 24,
@@ -143,22 +158,28 @@ const styles = StyleSheet.create({
     color: '#1e293b',
     marginBottom: 20,
   },
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#cbd5e1',
-    borderRadius: 10,
-    padding: 15,
-    fontSize: 16,
-    marginBottom: 15,
-  },
-  button: {
-    backgroundColor: '#2563eb',
-    padding: 16,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
-  },
+
+input: {
+  backgroundColor: '#fff',
+  borderWidth: 1,
+  borderColor: '#cbd5e1',
+  borderRadius: 10,
+  paddingVertical: 10,
+  paddingHorizontal: 14,
+  fontSize: 16,
+  marginBottom: 10,
+},
+
+ 
+button: {
+  backgroundColor: '#2563eb',
+  paddingVertical: 12,
+  paddingHorizontal: 16,
+  borderRadius: 10,
+  alignItems: 'center',
+  marginTop: 5,
+},
+
   disabledButton: {
     opacity: 0.6,
   },

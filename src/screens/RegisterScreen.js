@@ -1,17 +1,17 @@
 
+
 import { useState } from 'react';
 import {
-  View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
   Alert,
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
 } from 'react-native';
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+
 
 import { useAuth } from '../contexts/AuthContext';
 
@@ -80,14 +80,16 @@ export default function RegisterScreen({ onLogin }) {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-      >
+    
+  <KeyboardAwareScrollView
+    style={styles.container}
+    contentContainerStyle={styles.content}
+    keyboardShouldPersistTaps="handled"
+    keyboardDismissMode="on-drag"
+    bottomOffset={170}
+  >
+
+
         <Text style={styles.title}>LinguaRoom BG</Text>
 
         <Text style={styles.subtitle}>
@@ -150,9 +152,10 @@ export default function RegisterScreen({ onLogin }) {
             Вече имаш профил? Влез
           </Text>
         </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+   
+    </KeyboardAwareScrollView>
   );
+
 }
 
 const styles = StyleSheet.create({
@@ -160,11 +163,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f7fb',
   },
-  content: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
+ content: {
+  flexGrow: 1,
+  justifyContent: 'flex-start',
+  paddingHorizontal: 24,
+  paddingTop: 20,
+  paddingBottom: 50,
+},
   title: {
     fontSize: 32,
     fontWeight: 'bold',
@@ -176,7 +181,7 @@ const styles = StyleSheet.create({
     color: '#64748b',
     textAlign: 'center',
     marginTop: 10,
-    marginBottom: 35,
+    marginBottom: 15,
   },
   heading: {
     fontSize: 24,
@@ -184,22 +189,26 @@ const styles = StyleSheet.create({
     color: '#1e293b',
     marginBottom: 20,
   },
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#cbd5e1',
-    borderRadius: 10,
-    padding: 15,
-    fontSize: 16,
-    marginBottom: 15,
-  },
-  button: {
-    backgroundColor: '#2563eb',
-    padding: 16,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
-  },
+input: {
+  backgroundColor: '#fff',
+  borderWidth: 1,
+  borderColor: '#cbd5e1',
+  borderRadius: 10,
+  paddingVertical: 7,
+  paddingHorizontal: 14,
+  fontSize: 16,
+  marginBottom: 8,
+},
+
+button: {
+  backgroundColor: '#2563eb',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 10,
+  alignItems: 'center',
+  marginTop: 5,
+},
+
   disabledButton: {
     opacity: 0.6,
   },
