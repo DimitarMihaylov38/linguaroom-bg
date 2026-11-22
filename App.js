@@ -19,6 +19,8 @@ import {
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import CreateRoomScreen from './src/screens/CreateRoomScreen';
+import RoomDetailsScreen from './src/screens/RoomDetailsScreen';
+import EditRoomScreen from './src/screens/EditRoomScreen';
 import MainTabs from './src/navigation/MainTabs';
 
 const Stack = createNativeStackNavigator();
@@ -53,6 +55,16 @@ function RootNavigator() {
               headerBackTitle: 'Назад',
             }}
           />
+          <Stack.Screen
+  name="RoomDetails"
+  component={RoomDetailsScreen}
+  options={{ title: 'Езикова стая', headerBackTitle: 'Назад' }}
+/>
+<Stack.Screen
+  name="EditRoom"
+  component={EditRoomScreen}
+  options={{ title: 'Редактиране на стая' }}
+/>
         </Stack.Navigator>
       ) : (
         <Stack.Navigator>

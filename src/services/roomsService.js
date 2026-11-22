@@ -55,3 +55,35 @@ export async function getMyRooms(userId) {
 
   return data;
 }
+
+
+export async function updateRoom(roomId, roomData) {
+  const { data, error } = await supabase
+    .from('rooms')
+    .update({
+      name: roomData.name.trim(),
+      description: roomData.description?.trim() || null,
+      language: roomData.language,
+      level: roomData.level,
+    })
+    .eq('id', roomId)
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function deleteRoom(roomId) {
+  const { error } = await supabase
+    .from('rooms')
+    .delete()
+    .eq('id', roomId);
+
+  if (error) {
+    throw error;
+  }
+}

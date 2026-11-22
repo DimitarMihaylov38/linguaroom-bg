@@ -1,18 +1,19 @@
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
   ActivityIndicator,
+  FlatList,
   RefreshControl,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { getRooms } from '../services/roomsService';
 
-export default function RoomsScreen() {
+export default function RoomsScreen({ navigation }) {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -21,95 +22,99 @@ export default function RoomsScreen() {
   const loadRooms = useCallback(async () => {
     try {
       setError('');
+
       const data = await getRooms();
       setRooms(data);
     } catch (err) {
-      setError('Неуспешно зареждане на стаите.');
-      console.error('Rooms error:', err.message);
+      setError(err.message || 'Грешка при зареждане на стаите.');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   }, []);
 
-  useEffect(() => {
-    loadRooms();
-  }, [loadRooms]);
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await loadRooms();
-  };
-
-  const renderRoom = ({ item }) => (
-    <View style={styles.roomCard}>
-      <Text style={styles.roomName}>{item.name}</Text>
-
-      <Text style={styles.roomInfo}>
-        {item.language} · {item.level}
-      </Text>
-
-      {item.description ? (
-        <Text style={styles.description}>
-          {item.description}
-        </Text>
-      ) : null}
-    </View>
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      loadRooms();
+    }, [loadRooms])
   );
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#2563eb" />
-        <Text>Зареждане на стаите...</Text>
-      </View>
-    );
-  }
+  const handleRefresh = () => {
+  Alert.alert('Проверка', 'Издърпването надолу работи!');
+  setRefreshing(true);
+  loadRooms();
+};
+
+
+const renderRoom = ({ item }) => (
+  <TouchableOpacity
+    style={styles.roomCard}
+    activeOpacity={0.7}
+    onPress={() =>
+      navigation.getParent()?.navigate('RoomDetails', {
+        room: item,
+        roomId: item.id,
+      })
+    }
+  >
+    <Text style={styles.roomName}>{item.name}</Text>
+
+    <Text style={styles.roomDetails}>
+      {item.language} · {item.level}
+    </Text>
+
+    {item.description ? (
+      <Text style={styles.roomDescription}>
+        {item.description}
+      </Text>
+    ) : null}
+    <Text style={styles.openRoomText}>
+  Отвори стаята →
+</Text>
+  </TouchableOpacity>
+);
+
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Езикови стаи</Text>
-
-      <Text style={styles.subtitle}>
-        Избери език и се включи в разговор!
+      <Text style={styles.heading}>
+        Всички езикови стаи
       </Text>
 
-      {error ? (
-        <TouchableOpacity onPress={loadRooms}>
-          <Text style={styles.error}>
-            {error} Натисни за нов опит.
-          </Text>
-        </TouchableOpacity>
-      ) : null}
-
-      
-<FlatList
+      {loading ? (
+        <ActivityIndicator
+          size="large"
+          color="#2563eb"
+          style={styles.loader}
+        />
+      ) : (
+        <FlatList
   data={rooms}
   keyExtractor={(item) => item.id}
   renderItem={renderRoom}
-  alwaysBounceVertical={true}
+  style={{ flex: 1 }}
+  contentContainerStyle={styles.listContent}
   overScrollMode="always"
-
-        contentContainerStyle={styles.list}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-          />
-        }
-        ListEmptyComponent={
-          !error ? (
-            <View style={styles.emptyBox}>
-              <Text style={styles.emptyTitle}>
-                Все още няма езикови стаи.
-              </Text>
-              <Text style={styles.emptyText}>
-                Скоро ще можеш да създадеш първата стая!
-              </Text>
-            </View>
-          ) : null
-        }
-      />
+  nestedScrollEnabled={true}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+            />
+          }
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              {error || 'Все още няма създадени езикови стаи.'}
+            </Text>
+          }
+          ListHeaderComponent={
+            error && rooms.length > 0 ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : null
+          }
+        />
+      )}
     </View>
   );
 }
@@ -118,78 +123,63 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f7fb',
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    padding: 16,
   },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f7fb',
-  },
-  title: {
-    fontSize: 26,
+  heading: {
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#2563eb',
-    marginBottom: 10,
+    color: '#0f172a',
+    marginBottom: 18,
   },
-  subtitle: {
-    fontSize: 15,
-    color: '#64748b',
-    marginBottom: 20,
+  loader: {
+    marginTop: 40,
   },
-  list: {
+  listContent: {
     paddingBottom: 30,
     flexGrow: 1,
   },
   roomCard: {
     backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: '#e2e8f0',
-    borderRadius: 12,
-    padding: 18,
-    marginBottom: 12,
   },
   roomName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: '#0f172a',
+    marginBottom: 8,
   },
-  roomInfo: {
+  roomDetails: {
     fontSize: 14,
+    fontWeight: '600',
     color: '#2563eb',
-    marginTop: 8,
+    marginBottom: 8,
   },
-  description: {
+  roomDescription: {
     fontSize: 14,
-    color: '#64748b',
-    marginTop: 10,
+    color: '#475569',
     lineHeight: 21,
   },
-  emptyBox: {
-    backgroundColor: '#fff',
-    padding: 25,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  emptyTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#334155',
-    textAlign: 'center',
-  },
   emptyText: {
-    fontSize: 14,
-    color: '#64748b',
-    marginTop: 10,
     textAlign: 'center',
+    color: '#64748b',
+    fontSize: 16,
+    marginTop: 40,
   },
-  error: {
+  errorText: {
     color: '#dc2626',
-    marginBottom: 15,
-    fontSize: 14,
+    marginBottom: 12,
   },
+  openRoomText: {
+  color: '#2563eb',
+  fontSize: 14,
+  fontWeight: 'bold',
+  textAlign: 'right',
+  marginTop: 14,
+},
 });
+
 
