@@ -90,9 +90,21 @@ const handleDelete = () => {
   </TouchableOpacity>
 )}
 
-      <Text style={styles.note}>
-        Тук ще добавим чата на стаята.
-      </Text>
+      
+<TouchableOpacity
+  style={styles.chatButton}
+  onPress={() =>
+    navigation.navigate('Chat', {
+      roomId: room.id,
+      roomName: room.name,
+    })
+  }
+>
+  <Text style={styles.chatButtonText}>
+    Влез в чата
+  </Text>
+</TouchableOpacity>
+
     </ScrollView>
   );
 }
@@ -162,6 +174,19 @@ deleteButton: {
   marginTop: 12,
 },
 deleteButtonText: {
+  color: '#fff',
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+
+chatButton: {
+  backgroundColor: '#16a34a',
+  padding: 16,
+  borderRadius: 12,
+  alignItems: 'center',
+  marginTop: 24,
+},
+chatButtonText: {
   color: '#fff',
   fontSize: 16,
   fontWeight: 'bold',

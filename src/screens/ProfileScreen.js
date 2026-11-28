@@ -1,9 +1,12 @@
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { getProfile } from '../services/profileService';
 
 import {
   View,
   Text,
+  Image,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -14,9 +17,39 @@ import {
 
 import { useAuth } from '../contexts/AuthContext';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
   const { user, signOut } = useAuth();
   const [loading, setLoading] = useState(false);
+
+
+const [avatarUrl, setAvatarUrl] = useState(null);
+
+useFocusEffect(
+  useCallback(() => {
+    let active = true;
+
+    const loadProfile = async () => {
+      try {
+        if (!user?.id) return;
+
+        const profile = await getProfile(user.id);
+
+        if (active) {
+          setAvatarUrl(profile?.avatar_url || null);
+        }
+      } catch (error) {
+        console.log('Profile loading error:', error.message);
+      }
+    };
+
+    loadProfile();
+
+    return () => {
+      active = false;
+    };
+  }, [user?.id])
+);
+
 
   const handleLogout = async () => {
     try {
@@ -41,11 +74,20 @@ export default function ProfileScreen() {
       <Text style={styles.title}>Моят профил</Text>
 
       <View style={styles.profileCard}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {user?.email?.charAt(0).toUpperCase() || '?'}
-          </Text>
-        </View>
+        
+<View style={styles.avatar}>
+  {avatarUrl ? (
+    <Image
+      source={{ uri: avatarUrl }}
+      style={styles.avatarImage}
+    />
+  ) : (
+    <Text style={styles.avatarText}>
+      {user?.email?.charAt(0).toUpperCase() || '?'}
+    </Text>
+  )}
+</View>
+
 
         <Text style={styles.label}>Имейл адрес</Text>
 
@@ -53,10 +95,20 @@ export default function ProfileScreen() {
           {user?.email || 'Няма информация'}
         </Text>
 
-        <Text style={styles.description}>
-          Скоро тук ще можеш да добавиш профилна
-          снимка, да избереш език и ниво на владеене.
-        </Text>
+        
+<Text style={styles.description}>
+  Добави профилна снимка с предната камера на телефона.
+</Text>
+
+<TouchableOpacity
+  style={styles.cameraButton}
+  onPress={() => navigation.getParent()?.navigate('Camera')}
+>
+  <Text style={styles.cameraButtonText}>
+    Направи профилна снимка
+  </Text>
+</TouchableOpacity>
+
       </View>
 
      
@@ -115,6 +167,12 @@ scrollContent: {
     fontWeight: 'bold',
     color: '#2563eb',
   },
+
+  avatarImage: {
+  width: 90,
+  height: 90,
+  borderRadius: 45,
+},
   label: {
     fontSize: 14,
     color: '#64748b',
@@ -133,6 +191,22 @@ scrollContent: {
     textAlign: 'center',
     lineHeight: 22,
   },
+
+
+cameraButton: {
+  backgroundColor: '#2563eb',
+  borderRadius: 10,
+  paddingHorizontal: 18,
+  paddingVertical: 12,
+  alignItems: 'center',
+  marginTop: 16,
+},
+cameraButtonText: {
+  color: '#fff',
+  fontSize: 15,
+  fontWeight: 'bold',
+},
+
   logoutButton: {
     backgroundColor: '#dc2626',
     borderRadius: 10,

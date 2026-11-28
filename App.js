@@ -21,6 +21,8 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import CreateRoomScreen from './src/screens/CreateRoomScreen';
 import RoomDetailsScreen from './src/screens/RoomDetailsScreen';
 import EditRoomScreen from './src/screens/EditRoomScreen';
+import ChatScreen from './src/screens/ChatScreen';
+import CameraScreen from './src/screens/CameraScreen';
 import MainTabs from './src/navigation/MainTabs';
 
 const Stack = createNativeStackNavigator();
@@ -65,6 +67,20 @@ function RootNavigator() {
   component={EditRoomScreen}
   options={{ title: 'Редактиране на стая' }}
 />
+
+<Stack.Screen
+  name="Chat"
+  component={ChatScreen}
+  options={{ title: 'Групов чат' }}
+/>
+
+<Stack.Screen
+  name="Camera"
+  component={CameraScreen}
+  options={{ title: 'Профилна снимка' }}
+/>
+
+
         </Stack.Navigator>
       ) : (
         <Stack.Navigator>
